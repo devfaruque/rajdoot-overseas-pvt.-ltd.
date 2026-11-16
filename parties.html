@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agents & Clients - Rajdoot Overseas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }, sidebar: '#ffffff', background: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-sans text-slate-800 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Premium Sidebar -->
+    <aside class="w-64 bg-sidebar border-r border-slate-200/60 hidden md:flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 relative">
+        <div class="h-20 flex items-center px-6 border-b border-slate-100">
+            <img src="logo.png" alt="Logo" class="mr-3 drop-shadow-sm" style="max-height: 45px; width: auto; object-fit: contain;">
+            <div class="flex flex-col">
+                <span class="text-[15px] font-bold text-slate-900 tracking-tight leading-tight">Rajdoot Overseas</span>
+                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Agency RL-379</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8 custom-scrollbar">
+            <div class="space-y-1.5">
+                <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">
+                    <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                    Dashboard
+                </a>
+            </div>
+
+            <div>
+                <h3 class="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Finance & Admin</h3>
+                <div class="space-y-1">
+                    <!-- Agents & Clients (Active) -->
+                    <a href="parties.html" class="flex items-center px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-semibold shadow-md transition-all">
+                        <svg class="w-5 h-5 mr-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        Agents & Clients
+                    </a>
+                    <a href="transactions.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">
+                        <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Transactions Ledger
+                    </a>
+                    <a href="banking.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">
+                        <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                        Banking & Accounts
+                    </a>
+                    <a href="expenses.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">
+                        <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                        Daily Expenses
+                    </a>
+                    <a href="payroll.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">
+                        <svg class="w-5 h-5 mr-3 text-slate-400 group-hover:text-brand-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        HR & Payroll
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 z-10 sticky top-0">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Agents & Clients (পার্টি ও এজেন্ট)</h2>
+                <p class="text-sm text-slate-500 font-medium mt-0.5">Manage your agency partners, clients, and their balances</p>
+            </div>
+            <div class="flex items-center gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-600 font-bold shadow-sm">MA</div>
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-bold text-slate-700 leading-tight">Mostaque Ahmed</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
+            
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h3 class="text-lg font-bold text-slate-800">Party List</h3>
+                <button onclick="openPartyModal()" class="w-full md:w-auto flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm shadow-brand-500/30 transition-all active:scale-95">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Add New Party
+                </button>
+            </div>
+
+            <!-- Parties Table -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden mb-8">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                <th class="px-6 py-4 font-semibold">Party Name</th>
+                                <th class="px-6 py-4 font-semibold">Type</th>
+                                <th class="px-6 py-4 font-semibold">Phone & Contact</th>
+                                <th class="px-6 py-4 font-semibold text-right">Current Balance</th>
+                                <th class="px-6 py-4 font-semibold text-center">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="parties-body" class="divide-y divide-slate-100 text-sm">
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-slate-500">
+                                    <svg class="animate-spin h-8 w-8 mb-4 text-brand-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                                    Loading parties...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Modal: Add Party -->
+    <div id="party-modal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-lg font-bold text-slate-800">Add New Party</h3>
+                <button onclick="closePartyModal()" type="button" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-100 rounded-full p-1.5 transition-colors border border-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="party-form" onsubmit="saveParty(event)">
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Party / Agency Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="party_name" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Party Type <span class="text-red-500">*</span></label>
+                            <select id="party_type" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                <option value="Agent">Agent / Broker</option>
+                                <option value="Client">Direct Client</option>
+                                <option value="Supplier">Supplier / Vendor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="party_phone" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Contact Person (Optional)</label>
+                        <input type="text" id="contact_person" placeholder="Name of the person" class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Opening Balance (৳) <span class="text-red-500">*</span></label>
+                        <input type="number" id="opening_balance" required value="0" class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 font-bold">
+                        <p class="text-xs text-slate-500 mt-1">Use a negative (-) value if they owe you money (Due).</p>
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">
+                    <button type="button" onclick="closePartyModal()" class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200/50 rounded-xl">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-sm">Save Party</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Party -->
+    <div id="edit-party-modal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-lg font-bold text-slate-800">Edit Party Details</h3>
+                <button onclick="closeEditModal()" type="button" class="text-slate-400 hover:text-slate-600 bg-white hover:bg-slate-100 rounded-full p-1.5 transition-colors border border-slate-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            
+            <form id="edit-party-form" onsubmit="updateParty(event)">
+                <input type="hidden" id="edit_party_id">
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Party / Agency Name <span class="text-red-500">*</span></label>
+                        <input type="text" id="edit_party_name" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Party Type <span class="text-red-500">*</span></label>
+                            <select id="edit_party_type" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                                <option value="Agent">Agent / Broker</option>
+                                <option value="Client">Direct Client</option>
+                                <option value="Supplier">Supplier / Vendor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Phone Number <span class="text-red-500">*</span></label>
+                            <input type="tel" id="edit_party_phone" required class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Contact Person</label>
+                        <input type="text" id="edit_contact_person" class="block w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">
+                    <button type="button" onclick="closeEditModal()" class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-200/50 rounded-xl">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-sm">Update Party</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const SUPABASE_URL = 'https://mtjzgxkfqmtifgtdrbkf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10anpneGtmcW10aWZndGRyYmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4MTMwNDEsImV4cCI6MjEwOTM4OTA0MX0.3W3RxgtzGMJgssrjx18-Z96SkxtD7ZNGqnfhJt9aRiE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let globalParties = []; 
+
+        // Add Modal Functions
+        function openPartyModal() { 
+            const m = document.getElementById('party-modal');
+            m.classList.remove('hidden'); m.classList.add('flex');
+        }
+        function closePartyModal() { 
+            const m = document.getElementById('party-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+            document.getElementById('party-form').reset(); 
+            document.getElementById('opening_balance').value = 0;
+        }
+
+        // Edit Modal Functions
+        function openEditModal(id) {
+            const party = globalParties.find(p => p.id == id);
+            if(party) {
+                document.getElementById('edit_party_id').value = party.id;
+                document.getElementById('edit_party_name').value = party.party_name;
+                document.getElementById('edit_party_type').value = party.party_type;
+                document.getElementById('edit_party_phone').value = party.phone;
+                document.getElementById('edit_contact_person').value = party.contact_person || '';
+                
+                const m = document.getElementById('edit-party-modal');
+                m.classList.remove('hidden'); m.classList.add('flex');
+            }
+        }
+        function closeEditModal() {
+            const m = document.getElementById('edit-party-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+            document.getElementById('edit-party-form').reset();
+        }
+
+        // Fetch Parties
+        async function fetchParties() {
+            try {
+                const { data: parties, error } = await supabaseClient.from('parties').select('*').order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                globalParties = parties || [];
+                
+                const partiesBody = document.getElementById('parties-body');
+                partiesBody.innerHTML = '';
+
+                if(globalParties.length === 0) {
+                    partiesBody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500 font-medium">No parties added yet.</td></tr>';
+                } else {
+                    globalParties.forEach(party => {
+                        const balance = Number(party.current_balance);
+                        let balanceClass = balance < 0 ? 'text-red-500' : (balance > 0 ? 'text-emerald-600' : 'text-slate-600');
+                        let balanceText = balance < 0 ? `(Due) ৳ ${Math.abs(balance).toLocaleString()}` : `৳ ${balance.toLocaleString()}`;
+
+                        // বাটনের ভেতরে আইডিতে কোটেশন মার্ক (') দেওয়া হয়েছে
+                        partiesBody.innerHTML += `
+                            <tr class="hover:bg-slate-50/50 transition-colors">
+                                <td class="px-6 py-4 font-bold text-slate-800">${party.party_name}</td>
+                                <td class="px-6 py-4">
+                                    <span class="px-2.5 py-1 bg-brand-50 text-brand-700 text-xs rounded-md border border-brand-100 font-bold">${party.party_type}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="text-slate-700 font-medium">${party.phone}</div>
+                                    <div class="text-xs text-slate-500 mt-0.5">${party.contact_person || 'No contact specified'}</div>
+                                </td>
+                                <td class="px-6 py-4 text-right font-bold ${balanceClass}">
+                                    ${balanceText}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <button onclick="openEditModal('${party.id}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Edit</button>
+                                        <button onclick="deleteParty('${party.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>`;
+                    });
+                }
+            } catch (error) {
+                console.error("Database Error:", error);
+                document.getElementById('parties-body').innerHTML = `<tr><td colspan="5" class="text-red-500 text-center py-10">Error loading data.</td></tr>`;
+            }
+        }
+
+        // Add Party
+        async function saveParty(e) {
+            e.preventDefault();
+            const newParty = {
+                party_name: document.getElementById('party_name').value,
+                party_type: document.getElementById('party_type').value,
+                phone: document.getElementById('party_phone').value,
+                contact_person: document.getElementById('contact_person').value,
+                opening_balance: parseFloat(document.getElementById('opening_balance').value),
+                current_balance: parseFloat(document.getElementById('opening_balance').value)
+            };
+            
+            try {
+                const { error } = await supabaseClient.from('parties').insert([newParty]);
+                if (error) throw error;
+                closePartyModal();
+                fetchParties();
+            } catch (err) {
+                alert("Error saving party: " + err.message);
+            }
+        }
+
+        // Update Party
+        async function updateParty(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit_party_id').value;
+            const updatedData = {
+                party_name: document.getElementById('edit_party_name').value,
+                party_type: document.getElementById('edit_party_type').value,
+                phone: document.getElementById('edit_party_phone').value,
+                contact_person: document.getElementById('edit_contact_person').value
+            };
+            
+            try {
+                const { error } = await supabaseClient.from('parties').update(updatedData).eq('id', id);
+                if (error) throw error;
+                closeEditModal();
+                fetchParties();
+            } catch (err) {
+                alert("Error updating party: " + err.message);
+            }
+        }
+
+        // Delete Party
+        async function deleteParty(id) {
+            if(confirm("Are you sure you want to delete this party? This action cannot be undone.")) {
+                try {
+                    const { error } = await supabaseClient.from('parties').delete().eq('id', id);
+                    if (error) throw error;
+                    fetchParties();
+                } catch (err) {
+                    alert("Error deleting party: " + err.message);
+                }
+            }
+        }
+
+        // Initialize Data Fetch
+        fetchParties();
+    </script>
+</body>
+</html>

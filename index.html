@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Rajdoot Overseas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { 
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 font-sans text-slate-800 flex h-screen items-center justify-center selection:bg-brand-500 selection:text-white relative overflow-hidden">
+
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 z-0 pointer-events-none">
+        <div class="absolute -top-40 -right-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-brand-500/10 rounded-full blur-3xl"></div>
+    </div>
+
+    <!-- Login Card -->
+    <div class="w-full max-w-md bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100 p-8 z-10 relative">
+        
+        <!-- Header & Logo -->
+        <div class="text-center mb-8">
+            <!-- লোগো সাইজ ফিক্স করে দেওয়া হয়েছে -->
+            <img src="logo.png" alt="Rajdoot Overseas Logo" class="mx-auto mb-4 drop-shadow-sm" style="max-height: 75px; width: auto; object-fit: contain;">
+            
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">Rajdoot Overseas</h1>
+            <p class="text-sm font-bold text-slate-500 mt-1 uppercase tracking-widest">Agency RL-379</p>
+            <div class="mt-4 inline-block px-3 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-lg border border-slate-200">
+                Managed by Mostaque Ahmed
+            </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-5" onsubmit="handleLogin(event)">
+            <div class="space-y-1.5">
+                <label class="block text-sm font-semibold text-slate-700">Email Address</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+                    </div>
+                    <input type="email" id="email" required placeholder="admin@rajdoot.com" class="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all font-medium">
+                </div>
+            </div>
+
+            <div class="space-y-1.5">
+                <label class="block text-sm font-semibold text-slate-700">Password</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    </div>
+                    <input type="password" id="password" required placeholder="••••••••" class="block w-full pl-11 pr-4 py-3 border border-slate-200 rounded-xl bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all font-medium">
+                </div>
+            </div>
+
+            <div id="error-message" class="hidden text-center text-sm font-bold text-red-600 bg-red-50 py-2 rounded-lg border border-red-100">
+                Incorrect Email or Password!
+            </div>
+
+            <button type="submit" class="w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-6 py-3.5 rounded-xl font-bold shadow-sm shadow-brand-500/30 transition-all active:scale-95 text-base mt-2">
+                Sign In to Dashboard
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </button>
+        </form>
+        
+        <div class="mt-8 text-center text-xs font-semibold text-slate-400">
+            <p>&copy; 2026 Rajdoot Overseas (Pvt.) Ltd.</p>
+        </div>
+    </div>
+
+    <!-- Login Logic Script -->
+    <script>
+        function handleLogin(e) {
+            e.preventDefault(); 
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('error-message');
+
+            // ডিফল্ট লগিন ক্রেডেনশিয়াল
+            if(email === 'admin@rajdoot.com' && password === 'admin123') {
+                errorMsg.classList.add('hidden');
+                window.location.href = 'dashboard.html';
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transactions Ledger - Rajdoot Overseas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }, sidebar: '#ffffff', background: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body { background: white !important; color: black !important; }
+            aside, header button, .no-print { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; width: 100% !important; }
+            table { width: 100% !important; border-collapse: collapse !important; }
+            th, td { border: 1px solid #cbd5e1 !important; padding: 8px !important; }
+        }
+    </style>
+</head>
+<body class="bg-background font-sans text-slate-800 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Premium Sidebar -->
+    <aside class="w-64 bg-sidebar border-r border-slate-200/60 hidden md:flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 relative no-print">
+        <div class="h-20 flex items-center px-6 border-b border-slate-100">
+            <img src="logo.png" alt="Logo" class="mr-3 drop-shadow-sm" style="max-height: 45px; width: auto; object-fit: contain;">
+            <div class="flex flex-col">
+                <span class="text-[15px] font-bold text-slate-900 tracking-tight leading-tight">Rajdoot Overseas</span>
+                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Agency RL-379</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8 custom-scrollbar">
+            <div class="space-y-1.5">
+                <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Dashboard</a>
+            </div>
+            <div>
+                <h3 class="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Finance & Admin</h3>
+                <div class="space-y-1">
+                    <a href="parties.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Agents & Clients</a>
+                    <a href="transactions.html" class="flex items-center px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-semibold shadow-md transition-all">Transactions Ledger</a>
+                    <a href="banking.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Banking & Accounts</a>
+                    <a href="expenses.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Daily Expenses</a>
+                    <a href="payroll.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">HR & Payroll</a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 z-10 sticky top-0 no-print">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Transactions Ledger (লেনদেন)</h2>
+                <p class="text-sm text-slate-500 font-medium mt-0.5">Track and filter incoming and outgoing payments</p>
+            </div>
+            <div class="flex items-center gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-600 font-bold shadow-sm">MA</div>
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-bold text-slate-700 leading-tight">Mostaque Ahmed</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
+            <!-- Print Header Visible Only on Print -->
+            <div class="hidden print:block mb-6 text-center">
+                <h1 class="text-2xl font-bold">Rajdoot Overseas (RL-379)</h1>
+                <p class="text-sm text-slate-600">Transaction Report (<span id="print-date-label">All Time</span>)</p>
+                <hr class="my-2 border-slate-400">
+            </div>
+
+            <!-- Top Filter & Action Bar -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4 no-print">
+                <div class="flex items-center gap-3 w-full md:w-auto">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">Filter by Specific Date</label>
+                        <input type="date" id="filter_date" onchange="filterTransactions()" class="px-4 py-2 border rounded-xl bg-white font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <button onclick="clearFilter()" class="mt-5 px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-bold text-xs transition-colors">Show All</button>
+                </div>
+
+                <div class="flex gap-3 w-full md:w-auto">
+                    <button onclick="window.print()" class="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition-all active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Print Report
+                    </button>
+                    <button onclick="openTransactionModal()" class="flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-semibold shadow-sm transition-all active:scale-95">
+                        New Transaction
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="bg-white rounded-2xl border border-slate-100 shadow-[0_2px_10px_rgba(0,0,0,0.02)] overflow-hidden mb-8">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                <th class="px-6 py-4 font-semibold">Date</th>
+                                <th class="px-6 py-4 font-semibold">Party / Client Name</th>
+                                <th class="px-6 py-4 font-semibold">Type & Details</th>
+                                <th class="px-6 py-4 font-semibold text-right">Amount (৳)</th>
+                                <th class="px-6 py-4 font-semibold text-center no-print">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactions-body" class="divide-y divide-slate-100 text-sm">
+                            <tr>
+                                <td colspan="5" class="text-center py-10 text-slate-500">Loading transactions...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Add Transaction -->
+    <div id="transaction-modal" class="fixed inset-0 z-50 hidden bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-all">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden flex flex-col">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                <h3 class="text-lg font-bold text-slate-800">Add New Transaction</h3>
+                <button onclick="closeTransactionModal()" type="button" class="text-slate-400 hover:text-slate-600 bg-white rounded-full px-2">X</button>
+            </div>
+            
+            <form id="transaction-form" onsubmit="saveTransaction(event)">
+                <div class="p-6 space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Select Party / Agent <span class="text-red-500">*</span></label>
+                        <select id="party_id" required class="block w-full px-4 py-2.5 border rounded-xl bg-slate-50 focus:bg-white font-medium">
+                            <option value="" disabled selected>Loading parties...</option>
+                        </select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Transaction Type <span class="text-red-500">*</span></label>
+                            <select id="trans_type" required class="block w-full px-4 py-2.5 border rounded-xl bg-slate-50 focus:bg-white">
+                                <option value="Payment Received">Payment Received (টাকা পেয়েছি)</option>
+                                <option value="Payment Sent">Payment Sent (টাকা দিয়েছি)</option>
+                                <option value="Bill Added">Bill Added (নতুন বিল)</option>
+                                <option value="Discount">Discount (ছাড়)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1.5">Amount (৳) <span class="text-red-500">*</span></label>
+                            <input type="number" id="trans_amount" required min="1" class="block w-full px-4 py-2.5 border rounded-xl bg-slate-50 focus:bg-white font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Date</label>
+                        <input type="date" id="trans_date" required class="block w-full px-4 py-2.5 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Remarks / Note (Optional)</label>
+                        <input type="text" id="trans_remarks" placeholder="e.g. Visa processing fee" class="block w-full px-4 py-2.5 border rounded-xl bg-slate-50 focus:bg-white">
+                    </div>
+                </div>
+                <div class="px-6 py-4 border-t border-slate-100 flex justify-end gap-3 bg-slate-50/50">
+                    <button type="button" onclick="closeTransactionModal()" class="px-5 py-2.5 text-sm font-semibold text-slate-600 rounded-xl">Cancel</button>
+                    <button type="submit" class="px-6 py-2.5 text-sm font-semibold text-white bg-brand-600 rounded-xl">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const SUPABASE_URL = 'https://mtjzgxkfqmtifgtdrbkf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10anpneGtmcW10aWZndGRyYmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4MTMwNDEsImV4cCI6MjEwOTM4OTA0MX0.3W3RxgtzGMJgssrjx18-Z96SkxtD7ZNGqnfhJt9aRiE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let globalParties = [];
+        let allTransactions = [];
+        document.getElementById('trans_date').valueAsDate = new Date();
+
+        function openTransactionModal() { 
+            const m = document.getElementById('transaction-modal');
+            m.classList.remove('hidden'); m.classList.add('flex');
+        }
+        function closeTransactionModal() { 
+            const m = document.getElementById('transaction-modal');
+            m.classList.add('hidden'); m.classList.remove('flex');
+            document.getElementById('transaction-form').reset(); 
+            document.getElementById('trans_date').valueAsDate = new Date();
+        }
+
+        async function fetchTransactionsData() {
+            try {
+                const { data: parties } = await supabaseClient.from('parties').select('*');
+                globalParties = parties || [];
+
+                const partySelect = document.getElementById('party_id');
+                partySelect.innerHTML = '<option value="" disabled selected>Select a party</option>';
+                globalParties.forEach(p => {
+                    partySelect.innerHTML += `<option value="${p.id}">${p.party_name}</option>`;
+                });
+
+                const { data: transactions } = await supabaseClient.from('transactions').select('*').order('trans_date', { ascending: false }).order('created_at', { ascending: false });
+                allTransactions = transactions || [];
+                
+                renderTable(allTransactions);
+
+            } catch (error) {
+                console.error("Database Error:", error);
+                document.getElementById('transactions-body').innerHTML = `<tr><td colspan="5" class="text-red-500 text-center py-10">Error loading data.</td></tr>`;
+            }
+        }
+
+        function renderTable(transactions) {
+            const transBody = document.getElementById('transactions-body');
+            transBody.innerHTML = '';
+
+            if(!transactions || transactions.length === 0) {
+                transBody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-500 font-medium">No transactions found for this date.</td></tr>';
+            } else {
+                transactions.forEach(tx => {
+                    const party = globalParties.find(p => p.id === tx.party_id);
+                    const partyName = party ? party.party_name : '<span class="text-red-400">Deleted Party</span>';
+
+                    let typeStyle = 'text-slate-600 bg-slate-100 border-slate-200';
+                    let amountStyle = 'text-slate-700';
+                    
+                    if(tx.transaction_type === 'Payment Received') {
+                        typeStyle = 'text-emerald-700 bg-emerald-50 border-emerald-200';
+                        amountStyle = 'text-emerald-600';
+                    } else if(tx.transaction_type === 'Payment Sent' || tx.transaction_type === 'Bill Added') {
+                        typeStyle = 'text-red-700 bg-red-50 border-red-200';
+                        amountStyle = 'text-red-500';
+                    }
+
+                    const dateObj = new Date(tx.trans_date);
+                    const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                    transBody.innerHTML += `
+                        <tr class="hover:bg-slate-50/50 transition-colors">
+                            <td class="px-6 py-4 font-bold text-slate-600">${formattedDate}</td>
+                            <td class="px-6 py-4 font-bold text-brand-700">${partyName}</td>
+                            <td class="px-6 py-4">
+                                <span class="px-2.5 py-1 text-xs rounded-md border font-bold ${typeStyle}">${tx.transaction_type}</span>
+                                <div class="text-xs text-slate-500 mt-1">${tx.remarks || ''}</div>
+                            </td>
+                            <td class="px-6 py-4 text-right font-extrabold ${amountStyle}">
+                                ৳ ${Number(tx.amount).toLocaleString()}
+                            </td>
+                            <td class="px-6 py-4 text-center no-print">
+                                <button onclick="deleteTransaction('${tx.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors">Delete</button>
+                            </td>
+                        </tr>`;
+                });
+            }
+        }
+
+        function filterTransactions() {
+            const selectedDate = document.getElementById('filter_date').value;
+            if(!selectedDate) return;
+
+            document.getElementById('print-date-label').innerText = selectedDate;
+            const filtered = allTransactions.filter(tx => tx.trans_date === selectedDate);
+            renderTable(filtered);
+        }
+
+        function clearFilter() {
+            document.getElementById('filter_date').value = '';
+            document.getElementById('print-date-label').innerText = 'All Time';
+            renderTable(allTransactions);
+        }
+
+        async function saveTransaction(e) {
+            e.preventDefault();
+            const newTx = {
+                party_id: document.getElementById('party_id').value,
+                transaction_type: document.getElementById('trans_type').value,
+                amount: parseFloat(document.getElementById('trans_amount').value),
+                trans_date: document.getElementById('trans_date').value,
+                remarks: document.getElementById('trans_remarks').value
+            };
+            
+            try {
+                const { error } = await supabaseClient.from('transactions').insert([newTx]);
+                if (error) throw error;
+                closeTransactionModal();
+                fetchTransactionsData();
+            } catch (err) {
+                alert("Error saving transaction: " + err.message);
+            }
+        }
+
+        async function deleteTransaction(id) {
+            if(confirm("Are you sure you want to delete this transaction?")) {
+                try {
+                    const { error } = await supabaseClient.from('transactions').delete().eq('id', id);
+                    if (error) throw error;
+                    fetchTransactionsData();
+                } catch (err) {
+                    alert("Error deleting transaction: " + err.message);
+                }
+            }
+        }
+
+        fetchTransactionsData();
+    </script>
+</body>
+</html>
