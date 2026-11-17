@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monthly Report - Rajdoot Overseas</title>
+    <title>Financial Reports - Rajdoot Overseas</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -26,7 +26,10 @@
             main { padding: 0 !important; margin: 0 !important; width: 100% !important; background: white !important; }
             .print-border { border: 1px solid #e2e8f0 !important; box-shadow: none !important; }
             .print-text-dark { color: #0f172a !important; }
+            .tab-content { display: block !important; page-break-after: always; }
+            .tab-content.hidden { display: none !important; } /* Only print active tab */
         }
+        .tab-btn.active { background-color: #0ea5e9; color: white; border-color: #0ea5e9; }
     </style>
 </head>
 <body class="bg-background font-sans text-slate-800 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
@@ -34,7 +37,7 @@
     <!-- Premium Sidebar -->
     <aside class="w-64 bg-sidebar border-r border-slate-200/60 hidden md:flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 relative no-print">
         <div class="h-20 flex items-center px-6 border-b border-slate-100">
-            <img src="logo.png" alt="Logo" class="mr-3 drop-shadow-sm" style="max-height: 45px; width: auto; object-fit: contain;" onerror="this.src='https://via.placeholder.com/150x45?text=Rajdoot+Logo'">
+            <img src="logo.png" alt="Logo" class="mr-3 drop-shadow-sm" style="max-height: 45px; width: auto; object-fit: contain;">
             <div class="flex flex-col">
                 <span class="text-[15px] font-bold text-slate-900 tracking-tight leading-tight">Rajdoot Overseas</span>
                 <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Agency RL-379</span>
@@ -53,8 +56,7 @@
                     <a href="banking.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Banking & Accounts</a>
                     <a href="expenses.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Daily Expenses</a>
                     <a href="payroll.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">HR & Payroll</a>
-                    <!-- Monthly Report (Active) -->
-                    <a href="report.html" class="flex items-center px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-semibold shadow-md transition-all">Monthly Report (P&L)</a>
+                    <a href="report.html" class="flex items-center px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-semibold shadow-md transition-all">Financial Reports</a>
                 </div>
             </div>
         </nav>
@@ -63,8 +65,8 @@
     <div class="flex-1 flex flex-col min-w-0 relative">
         <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 z-10 sticky top-0 no-print">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Monthly Business Report</h2>
-                <p class="text-sm text-slate-500 font-medium mt-0.5">Profit and Loss Statement (P&L)</p>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Financial Reports & Statements</h2>
+                <p class="text-sm text-slate-500 font-medium mt-0.5">Trial Balance, Profit & Loss, Balance Sheet</p>
             </div>
             <div class="flex items-center gap-3 cursor-pointer">
                 <div class="w-10 h-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-600 font-bold shadow-sm">MA</div>
@@ -76,117 +78,185 @@
 
         <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
             
-            <!-- Print Header (Visible Only on Print) -->
+            <!-- Print Header -->
             <div class="hidden print:block mb-8 text-center border-b-2 border-slate-800 pb-4">
                 <h1 class="text-3xl font-extrabold text-slate-900 uppercase tracking-widest mb-1">Rajdoot Overseas</h1>
                 <p class="text-sm font-bold text-slate-600 uppercase tracking-widest">Government Approved Recruiting Agency (RL-379)</p>
-                <h2 class="text-xl font-bold mt-4 text-slate-800">Monthly Profit & Loss Statement</h2>
-                <p class="text-md font-bold text-slate-600" id="print-month-label">Month: </p>
+                <h2 class="text-xl font-bold mt-4 text-slate-800" id="print-report-title">Financial Statement</h2>
+                <p class="text-md font-bold text-slate-600" id="print-date-label">As of Today</p>
             </div>
 
-            <!-- Filter Bar (No Print) -->
+            <!-- Controls (No Print) -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm no-print">
-                <div class="flex items-center gap-4 w-full md:w-auto">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Select Month & Year</label>
-                        <input type="month" id="report_month" onchange="generateReport()" class="px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 font-bold text-slate-700 shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-500/20">
-                    </div>
-                    <button onclick="generateReport()" class="mt-5 px-5 py-2.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl font-bold transition-colors">Generate</button>
+                <!-- Tabs -->
+                <div class="flex gap-2 bg-slate-100 p-1 rounded-xl">
+                    <button onclick="switchTab('tb')" id="btn-tb" class="tab-btn active px-4 py-2 rounded-lg font-bold text-sm text-slate-600 transition-all">Trial Balance</button>
+                    <button onclick="switchTab('pl')" id="btn-pl" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm text-slate-600 transition-all">Profit & Loss</button>
+                    <button onclick="switchTab('bs')" id="btn-bs" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm text-slate-600 transition-all">Balance Sheet</button>
                 </div>
 
-                <div class="w-full md:w-auto">
-                    <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-md transition-all active:scale-95">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                        Print P&L Report
+                <div class="flex items-center gap-4">
+                    <div id="month-filter-container" class="hidden">
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">P&L Month</label>
+                        <input type="month" id="report_month" onchange="generateReports()" class="px-4 py-2 border rounded-xl bg-slate-50 font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <button onclick="window.print()" class="mt-4 md:mt-0 flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-md transition-all active:scale-95">
+                        Print Report
                     </button>
                 </div>
             </div>
 
             <!-- Loader -->
-            <div id="loader" class="hidden text-center py-10 no-print">
+            <div id="loader" class="text-center py-10 no-print">
                 <svg class="animate-spin h-8 w-8 mb-4 text-brand-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                <p class="text-slate-500 font-medium">Calculating financials...</p>
+                <p class="text-slate-500 font-medium">Processing Accounting Data...</p>
             </div>
 
-            <!-- Report Content -->
-            <div id="report-content" class="space-y-6">
+            <div id="all-reports" class="hidden">
                 
-                <!-- Financial Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Total Income -->
-                    <div class="bg-white p-6 rounded-2xl border-l-4 border-emerald-500 shadow-sm print-border">
-                        <p class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">Total Received (Income)</p>
-                        <h3 id="card_income" class="text-3xl font-extrabold text-emerald-600 print-text-dark">৳ 0</h3>
-                        <p class="text-xs text-slate-400 mt-2 font-medium">Cash inflow from clients/agents</p>
-                    </div>
-                    <!-- Total Expenses -->
-                    <div class="bg-white p-6 rounded-2xl border-l-4 border-red-400 shadow-sm print-border">
-                        <p class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">Total Operating Expenses</p>
-                        <h3 id="card_expense" class="text-3xl font-extrabold text-red-500 print-text-dark">৳ 0</h3>
-                        <p class="text-xs text-slate-400 mt-2 font-medium">Daily expenses + Payroll</p>
-                    </div>
-                    <!-- Net Profit -->
-                    <div class="bg-slate-900 p-6 rounded-2xl shadow-lg print-border">
-                        <p class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-1">Net Profit / (Loss)</p>
-                        <h3 id="card_profit" class="text-3xl font-extrabold text-white print-text-dark">৳ 0</h3>
-                        <p class="text-xs text-slate-400 mt-2 font-medium" id="profit_status_text">Overall balance for the month</p>
+                <!-- 1. Trial Balance (রেওয়ামিল) -->
+                <div id="tab-tb" class="tab-content">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 print:hidden">Trial Balance (রেওয়ামিল)</h3>
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print-border">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-800 text-white text-sm uppercase tracking-wider">
+                                    <th class="px-6 py-4 font-semibold">Account / Ledger Head</th>
+                                    <th class="px-6 py-4 font-semibold text-right w-40 border-l border-slate-700">Debit (Dr.) ৳</th>
+                                    <th class="px-6 py-4 font-semibold text-right w-40 border-l border-slate-700">Credit (Cr.) ৳</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tb-body" class="divide-y divide-slate-100 text-sm">
+                                <!-- JS Injected -->
+                            </tbody>
+                            <tfoot class="bg-slate-50 font-extrabold text-base">
+                                <tr>
+                                    <td class="px-6 py-4 text-right">Total:</td>
+                                    <td id="tb-total-dr" class="px-6 py-4 text-right border-l border-slate-200 text-emerald-600">0</td>
+                                    <td id="tb-total-cr" class="px-6 py-4 text-right border-l border-slate-200 text-emerald-600">0</td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
 
-                <!-- Detailed Breakdown Tables -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <!-- 2. Profit & Loss (আয়-ব্যয় হিসাব) -->
+                <div id="tab-pl" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 print:hidden">Profit & Loss Account (আয়-ব্যয় হিসাব)</h3>
                     
-                    <!-- Income Breakdown -->
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-border">
-                        <div class="bg-emerald-50/50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800">Income Breakdown</h3>
-                            <span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">Credit</span>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <span class="font-medium text-slate-600">Payments Received from Agents/Clients</span>
-                                <span id="detail_payments" class="font-bold text-slate-800">৳ 0</span>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Expenses (Debit Side) -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print-border">
+                            <div class="bg-red-50 px-6 py-4 border-b border-red-100">
+                                <h3 class="font-bold text-red-800">Expenditure (খরচসমূহ)</h3>
                             </div>
-                            <!-- Future scope for other incomes can go here -->
-                            <div class="flex justify-between items-center pt-2">
-                                <span class="font-extrabold text-slate-800">Total Income (A)</span>
-                                <span id="detail_total_income" class="font-extrabold text-emerald-600 text-lg">৳ 0</span>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600">Operating / Daily Expenses</span>
+                                    <span id="pl-daily-exp" class="font-bold">৳ 0</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600">Employee Salaries & Payroll</span>
+                                    <span id="pl-payroll" class="font-bold">৳ 0</span>
+                                </div>
+                                <div id="pl-net-profit-row" class="flex justify-between items-center pt-4 text-emerald-600 hidden">
+                                    <span class="font-extrabold uppercase text-xs">Net Profit (Transferred to Capital)</span>
+                                    <span id="pl-net-profit" class="font-extrabold text-lg">৳ 0</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-4 border-t-2 border-slate-800">
+                                    <span class="font-extrabold text-slate-800">Total</span>
+                                    <span id="pl-total-dr" class="font-extrabold text-slate-800 text-lg">৳ 0</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Expense Breakdown -->
-                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-border">
-                        <div class="bg-red-50/50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                            <h3 class="font-bold text-slate-800">Expense Breakdown</h3>
-                            <span class="text-xs font-bold bg-red-100 text-red-700 px-2 py-1 rounded">Debit</span>
-                        </div>
-                        <div class="p-6 space-y-4">
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <span class="font-medium text-slate-600">Daily Operating Expenses (Office, Bills, etc)</span>
-                                <span id="detail_daily_exp" class="font-bold text-slate-800">৳ 0</span>
+                        <!-- Income (Credit Side) -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print-border">
+                            <div class="bg-emerald-50 px-6 py-4 border-b border-emerald-100">
+                                <h3 class="font-bold text-emerald-800">Income (আয়সমূহ)</h3>
                             </div>
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <span class="font-medium text-slate-600">Employee Salaries (Net Paid)</span>
-                                <span id="detail_payroll" class="font-bold text-slate-800">৳ 0</span>
-                            </div>
-                            <div class="flex justify-between items-center pt-2">
-                                <span class="font-extrabold text-slate-800">Total Expenses (B)</span>
-                                <span id="detail_total_expense" class="font-extrabold text-red-500 text-lg">৳ 0</span>
+                            <div class="p-6 space-y-4">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600">Total Payments Received (Sales)</span>
+                                    <span id="pl-income" class="font-bold">৳ 0</span>
+                                </div>
+                                <div id="pl-net-loss-row" class="flex justify-between items-center pt-4 text-red-500 hidden">
+                                    <span class="font-extrabold uppercase text-xs">Net Loss (Transferred to Capital)</span>
+                                    <span id="pl-net-loss" class="font-extrabold text-lg">৳ 0</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-4 border-t-2 border-slate-800">
+                                    <span class="font-extrabold text-slate-800">Total</span>
+                                    <span id="pl-total-cr" class="font-extrabold text-slate-800 text-lg">৳ 0</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Final Calculation Footer -->
-                <div class="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex justify-between items-center print-border">
-                    <div>
-                        <h3 class="text-lg font-bold text-slate-800">Final Month-End Assessment</h3>
-                        <p class="text-sm text-slate-500 font-medium mt-1">Formula: Total Income (A) - Total Expenses (B)</p>
-                    </div>
-                    <div class="text-right">
-                        <span id="final_badge" class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Profit</span>
-                        <h2 id="final_amount" class="text-4xl font-extrabold tracking-tight">৳ 0</h2>
+                <!-- 3. Balance Sheet (উদ্বৃত্তপত্র) -->
+                <div id="tab-bs" class="tab-content hidden">
+                    <h3 class="text-xl font-bold text-slate-800 mb-4 print:hidden">Balance Sheet (উদ্বৃত্তপত্র)</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Assets -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print-border flex flex-col">
+                            <div class="bg-blue-50 px-6 py-4 border-b border-blue-100">
+                                <h3 class="font-bold text-blue-800">Assets (সম্পদসমূহ)</h3>
+                            </div>
+                            <div class="p-6 space-y-4 flex-1">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 font-bold">Current Assets</span>
+                                </div>
+                                <div class="flex justify-between items-center pl-4 border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 text-sm">Cash & Bank Balances</span>
+                                    <span id="bs-bank" class="font-bold">৳ 0</span>
+                                </div>
+                                <div class="flex justify-between items-center pl-4 border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 text-sm">Accounts Receivable (Sundry Debtors)</span>
+                                    <span id="bs-debtors" class="font-bold">৳ 0</span>
+                                </div>
+                            </div>
+                            <div class="p-6 border-t-2 border-slate-800 bg-slate-50 mt-auto">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-extrabold text-slate-800">Total Assets</span>
+                                    <span id="bs-total-assets" class="font-extrabold text-blue-600 text-xl">৳ 0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liabilities & Equity -->
+                        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden print-border flex flex-col">
+                            <div class="bg-orange-50 px-6 py-4 border-b border-orange-100">
+                                <h3 class="font-bold text-orange-800">Liabilities & Equity (দায় ও মালিকানাস্বত্ব)</h3>
+                            </div>
+                            <div class="p-6 space-y-4 flex-1">
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 font-bold">Capital & Equity</span>
+                                </div>
+                                <div class="flex justify-between items-center pl-4 border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 text-sm">Opening Capital / Retained Earnings</span>
+                                    <span id="bs-capital" class="font-bold">৳ 0</span>
+                                </div>
+                                <div class="flex justify-between items-center pl-4 border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 text-sm">Add: Net Profit (or Less Loss)</span>
+                                    <span id="bs-net-profit" class="font-bold text-emerald-600">৳ 0</span>
+                                </div>
+                                
+                                <div class="flex justify-between items-center border-b border-slate-50 pb-2 pt-4">
+                                    <span class="text-slate-600 font-bold">Current Liabilities</span>
+                                </div>
+                                <div class="flex justify-between items-center pl-4 border-b border-slate-50 pb-2">
+                                    <span class="text-slate-600 text-sm">Accounts Payable (Sundry Creditors)</span>
+                                    <span id="bs-creditors" class="font-bold">৳ 0</span>
+                                </div>
+                            </div>
+                            <div class="p-6 border-t-2 border-slate-800 bg-slate-50 mt-auto">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-extrabold text-slate-800">Total Liab. & Equity</span>
+                                    <span id="bs-total-liab" class="font-extrabold text-orange-600 text-xl">৳ 0</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -200,130 +270,217 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10anpneGtmcW10aWZndGRyYmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4MTMwNDEsImV4cCI6MjEwOTM4OTA0MX0.3W3RxgtzGMJgssrjx18-Z96SkxtD7ZNGqnfhJt9aRiE';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // Set default month to current month
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         document.getElementById('report_month').value = `${yyyy}-${mm}`;
+        
+        let currentTab = 'tb';
 
-        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-        async function generateReport() {
-            const monthInput = document.getElementById('report_month').value;
-            if(!monthInput) return;
-
-            // UI Elements
-            document.getElementById('loader').classList.remove('hidden');
-            document.getElementById('report-content').classList.add('hidden');
-
-            const [year, month] = monthInput.split('-');
-            const monthName = monthNames[parseInt(month) - 1];
+        function switchTab(tab) {
+            currentTab = tab;
+            // Hide all
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active', 'bg-brand-500', 'text-white'));
             
-            // Set Print Label
-            document.getElementById('print-month-label').innerText = `Month: ${monthName} ${year}`;
+            // Show selected
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).classList.add('active');
+            
+            // Update Title for Print
+            if(tab === 'tb') document.getElementById('print-report-title').innerText = "Trial Balance (রেওয়ামিল)";
+            if(tab === 'pl') document.getElementById('print-report-title').innerText = "Profit & Loss Account (আয়-ব্যয়)";
+            if(tab === 'bs') document.getElementById('print-report-title').innerText = "Balance Sheet (উদ্বৃত্তপত্র)";
 
-            // Date Ranges for DB Query
-            const startDate = `${year}-${month}-01`;
-            const endDate = new Date(year, month, 0).toISOString().split('T')[0]; // Last day of month
+            // Show month filter only for P&L
+            if(tab === 'pl') {
+                document.getElementById('month-filter-container').classList.remove('hidden');
+            } else {
+                document.getElementById('month-filter-container').classList.add('hidden');
+            }
+        }
+
+        async function generateReports() {
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('all-reports').classList.add('hidden');
 
             try {
-                // 1. Fetch Income (Payments Received) from Transactions
-                const { data: incomeData, error: incError } = await supabaseClient
-                    .from('transactions')
-                    .select('amount')
-                    .eq('transaction_type', 'Payment Received')
-                    .gte('trans_date', startDate)
-                    .lte('trans_date', endDate);
-                if (incError) throw incError;
+                // 1. Fetch All Data
+                const [partiesRes, bankRes, expRes, payRes, txRes] = await Promise.all([
+                    supabaseClient.from('parties').select('*'),
+                    supabaseClient.from('banking').select('*'),
+                    supabaseClient.from('expenses').select('*'),
+                    supabaseClient.from('payroll').select('*'),
+                    supabaseClient.from('transactions').select('*')
+                ]);
 
-                let totalIncome = 0;
-                if(incomeData) {
-                    incomeData.forEach(item => totalIncome += Number(item.amount));
-                }
+                // -----------------------------------------
+                // BALANCE SHEET CALCULATIONS (Cumulative)
+                // -----------------------------------------
+                let totalBank = 0;
+                if(bankRes.data) bankRes.data.forEach(b => totalBank += Number(b.balance));
 
-                // 2. Fetch Daily Expenses
-                const { data: expenseData, error: expError } = await supabaseClient
-                    .from('expenses')
-                    .select('amount')
-                    .gte('expense_date', startDate)
-                    .lte('expense_date', endDate);
-                if (expError) throw expError;
-
-                let dailyExpenses = 0;
-                if(expenseData) {
-                    expenseData.forEach(item => dailyExpenses += Number(item.amount));
-                }
-
-                // 3. Fetch Payroll Expenses
-                const { data: payrollData, error: payError } = await supabaseClient
-                    .from('payroll')
-                    .select('net_salary')
-                    .eq('salary_month', monthName)
-                    .eq('salary_year', parseInt(year));
-                if (payError) throw payError;
-
-                let totalPayroll = 0;
-                if(payrollData) {
-                    payrollData.forEach(item => totalPayroll += Number(item.net_salary));
-                }
-
-                // Calculations
-                const totalExpenses = dailyExpenses + totalPayroll;
-                const netProfit = totalIncome - totalExpenses;
-
-                // Update UI Cards
-                document.getElementById('card_income').innerText = `৳ ${totalIncome.toLocaleString()}`;
-                document.getElementById('card_expense').innerText = `৳ ${totalExpenses.toLocaleString()}`;
+                let totalDebtors = 0; // Parties owing us (Balance < 0)
+                let totalCreditors = 0; // We owe parties (Balance > 0)
                 
-                const profitCard = document.getElementById('card_profit');
-                const profitText = document.getElementById('profit_status_text');
-                if(netProfit >= 0) {
-                    profitCard.innerText = `৳ ${netProfit.toLocaleString()}`;
-                    profitCard.className = "text-3xl font-extrabold text-emerald-400 print-text-dark";
-                    profitText.innerText = "Great! You made a profit this month.";
+                // We calculate party balances dynamically from transactions & opening balance to ensure accuracy
+                const partyBalances = {};
+                if(partiesRes.data) {
+                    partiesRes.data.forEach(p => {
+                        partyBalances[p.id] = Number(p.opening_balance) || 0;
+                    });
+                }
+                
+                // Adjust balances based on transactions
+                let allTimeIncome = 0;
+                let allTimeExpenses = 0;
+                
+                if(expRes.data) expRes.data.forEach(e => allTimeExpenses += Number(e.amount));
+                if(payRes.data) payRes.data.forEach(p => allTimeExpenses += Number(p.net_salary));
+
+                if(txRes.data) {
+                    txRes.data.forEach(tx => {
+                        const amt = Number(tx.amount);
+                        if(tx.transaction_type === 'Payment Received') {
+                            allTimeIncome += amt;
+                            if(partyBalances[tx.party_id] !== undefined) partyBalances[tx.party_id] -= amt;
+                        } else if (tx.transaction_type === 'Payment Sent' || tx.transaction_type === 'Bill Added') {
+                            if(partyBalances[tx.party_id] !== undefined) partyBalances[tx.party_id] += amt;
+                        }
+                    });
+                }
+
+                for (const pid in partyBalances) {
+                    const bal = partyBalances[pid];
+                    if(bal < 0) totalDebtors += Math.abs(bal); // Asset
+                    if(bal > 0) totalCreditors += bal; // Liability
+                }
+
+                const totalAssets = totalBank + totalDebtors;
+                const allTimeNetProfit = allTimeIncome - allTimeExpenses;
+                
+                // Balancing Figure: Opening Capital = Assets - Liabilities - All Time Net Profit
+                const openingCapital = totalAssets - totalCreditors - allTimeNetProfit;
+
+
+                // -----------------------------------------
+                // P&L CALCULATIONS (Filtered by Month)
+                // -----------------------------------------
+                const monthInput = document.getElementById('report_month').value;
+                const [year, month] = monthInput.split('-');
+                const monthName = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][parseInt(month)-1];
+                const startDate = `${year}-${month}-01`;
+                const endDate = new Date(year, month, 0).toISOString().split('T')[0];
+
+                let monthlyIncome = 0;
+                let monthlyExp = 0;
+                let monthlyPayroll = 0;
+
+                if(txRes.data) {
+                    txRes.data.forEach(tx => {
+                        if(tx.transaction_type === 'Payment Received' && tx.trans_date >= startDate && tx.trans_date <= endDate) {
+                            monthlyIncome += Number(tx.amount);
+                        }
+                    });
+                }
+                if(expRes.data) {
+                    expRes.data.forEach(e => {
+                        if(e.expense_date >= startDate && e.expense_date <= endDate) {
+                            monthlyExp += Number(e.amount);
+                        }
+                    });
+                }
+                if(payRes.data) {
+                    payRes.data.forEach(p => {
+                        if(p.salary_month === monthName && p.salary_year == year) {
+                            monthlyPayroll += Number(p.net_salary);
+                        }
+                    });
+                }
+
+                const totalMonthlyExp = monthlyExp + monthlyPayroll;
+                const monthlyNetProfit = monthlyIncome - totalMonthlyExp;
+
+                // -----------------------------------------
+                // RENDER TRIAL BALANCE
+                // -----------------------------------------
+                const tbBody = document.getElementById('tb-body');
+                tbBody.innerHTML = `
+                    <tr><td class="px-6 py-3 border-b">Cash & Bank Balances</td><td class="px-6 py-3 border-b border-l text-right">${totalBank.toLocaleString()}</td><td class="px-6 py-3 border-b border-l text-right">-</td></tr>
+                    <tr><td class="px-6 py-3 border-b">Accounts Receivable (Debtors)</td><td class="px-6 py-3 border-b border-l text-right">${totalDebtors.toLocaleString()}</td><td class="px-6 py-3 border-b border-l text-right">-</td></tr>
+                    <tr><td class="px-6 py-3 border-b">Total Operating Expenses</td><td class="px-6 py-3 border-b border-l text-right">${allTimeExpenses.toLocaleString()}</td><td class="px-6 py-3 border-b border-l text-right">-</td></tr>
+                    
+                    <tr><td class="px-6 py-3 border-b">Accounts Payable (Creditors)</td><td class="px-6 py-3 border-b border-l text-right">-</td><td class="px-6 py-3 border-b border-l text-right">${totalCreditors.toLocaleString()}</td></tr>
+                    <tr><td class="px-6 py-3 border-b">Total Income / Revenue</td><td class="px-6 py-3 border-b border-l text-right">-</td><td class="px-6 py-3 border-b border-l text-right">${allTimeIncome.toLocaleString()}</td></tr>
+                    <tr><td class="px-6 py-3 border-b font-bold text-slate-800">Opening Capital / Equity</td><td class="px-6 py-3 border-b border-l text-right">-</td><td class="px-6 py-3 border-b border-l text-right font-bold text-slate-800">${openingCapital.toLocaleString()}</td></tr>
+                `;
+                
+                const tbTotal = totalBank + totalDebtors + allTimeExpenses;
+                document.getElementById('tb-total-dr').innerText = tbTotal.toLocaleString();
+                document.getElementById('tb-total-cr').innerText = tbTotal.toLocaleString();
+
+
+                // -----------------------------------------
+                // RENDER PROFIT & LOSS
+                // -----------------------------------------
+                document.getElementById('pl-daily-exp').innerText = `৳ ${monthlyExp.toLocaleString()}`;
+                document.getElementById('pl-payroll').innerText = `৳ ${monthlyPayroll.toLocaleString()}`;
+                document.getElementById('pl-income').innerText = `৳ ${monthlyIncome.toLocaleString()}`;
+
+                const maxSide = Math.max(monthlyIncome, totalMonthlyExp);
+                
+                document.getElementById('pl-net-profit-row').classList.add('hidden');
+                document.getElementById('pl-net-loss-row').classList.add('hidden');
+
+                if(monthlyNetProfit >= 0) {
+                    document.getElementById('pl-net-profit-row').classList.remove('hidden');
+                    document.getElementById('pl-net-profit').innerText = `৳ ${monthlyNetProfit.toLocaleString()}`;
                 } else {
-                    profitCard.innerText = `- ৳ ${Math.abs(netProfit).toLocaleString()}`;
-                    profitCard.className = "text-3xl font-extrabold text-red-400 print-text-dark";
-                    profitText.innerText = "Warning: Expenses exceeded income.";
+                    document.getElementById('pl-net-loss-row').classList.remove('hidden');
+                    document.getElementById('pl-net-loss').innerText = `৳ ${Math.abs(monthlyNetProfit).toLocaleString()}`;
                 }
 
-                // Update Breakdown Tables
-                document.getElementById('detail_payments').innerText = `৳ ${totalIncome.toLocaleString()}`;
-                document.getElementById('detail_total_income').innerText = `৳ ${totalIncome.toLocaleString()}`;
+                document.getElementById('pl-total-dr').innerText = `৳ ${maxSide.toLocaleString()}`;
+                document.getElementById('pl-total-cr').innerText = `৳ ${maxSide.toLocaleString()}`;
 
-                document.getElementById('detail_daily_exp').innerText = `৳ ${dailyExpenses.toLocaleString()}`;
-                document.getElementById('detail_payroll').innerText = `৳ ${totalPayroll.toLocaleString()}`;
-                document.getElementById('detail_total_expense').innerText = `৳ ${totalExpenses.toLocaleString()}`;
 
-                // Update Final Footer
-                const finalAmount = document.getElementById('final_amount');
-                const finalBadge = document.getElementById('final_badge');
+                // -----------------------------------------
+                // RENDER BALANCE SHEET
+                // -----------------------------------------
+                document.getElementById('bs-bank').innerText = `৳ ${totalBank.toLocaleString()}`;
+                document.getElementById('bs-debtors').innerText = `৳ ${totalDebtors.toLocaleString()}`;
+                document.getElementById('bs-total-assets').innerText = `৳ ${totalAssets.toLocaleString()}`;
+
+                document.getElementById('bs-capital').innerText = `৳ ${openingCapital.toLocaleString()}`;
+                document.getElementById('bs-creditors').innerText = `৳ ${totalCreditors.toLocaleString()}`;
                 
-                finalAmount.innerText = `৳ ${Math.abs(netProfit).toLocaleString()}`;
-                
-                if(netProfit >= 0) {
-                    finalAmount.className = "text-4xl font-extrabold tracking-tight text-emerald-600";
-                    finalBadge.className = "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block bg-emerald-100 text-emerald-700";
-                    finalBadge.innerText = "Net Profit";
+                const bsNetProfitEl = document.getElementById('bs-net-profit');
+                if(allTimeNetProfit >= 0) {
+                    bsNetProfitEl.innerText = `৳ ${allTimeNetProfit.toLocaleString()}`;
+                    bsNetProfitEl.className = "font-bold text-emerald-600";
                 } else {
-                    finalAmount.className = "text-4xl font-extrabold tracking-tight text-red-600";
-                    finalBadge.className = "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block bg-red-100 text-red-700";
-                    finalBadge.innerText = "Net Loss";
+                    bsNetProfitEl.innerText = `(৳ ${Math.abs(allTimeNetProfit).toLocaleString()})`;
+                    bsNetProfitEl.className = "font-bold text-red-500";
                 }
 
-                // Show Content
+                // Balance Sheet Magic: Assets = Liabilities + Equity
+                const totalLiabEq = openingCapital + allTimeNetProfit + totalCreditors;
+                document.getElementById('bs-total-liab').innerText = `৳ ${totalLiabEq.toLocaleString()}`;
+
+                // Show UI
                 document.getElementById('loader').classList.add('hidden');
-                document.getElementById('report-content').classList.remove('hidden');
+                document.getElementById('all-reports').classList.remove('hidden');
 
             } catch (error) {
                 console.error("Report Generation Error:", error);
-                alert("Error generating report. Please check your database connection.");
+                alert("Error generating reports. Check connection.");
                 document.getElementById('loader').classList.add('hidden');
             }
         }
 
-        // Generate report on first load
-        window.onload = generateReport;
+        // Init
+        switchTab('tb');
+        generateReports();
     </script>
 </body>
 </html>
