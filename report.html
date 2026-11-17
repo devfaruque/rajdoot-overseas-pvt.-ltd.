@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Report - Rajdoot Overseas</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Supabase JS Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 900: '#0c4a6e' }, sidebar: '#ffffff', background: '#f8fafc' }
+                }
+            }
+        }
+    </script>
+    <style>
+        @media print {
+            body { background: white !important; color: black !important; }
+            aside, header, .no-print { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; width: 100% !important; background: white !important; }
+            .print-border { border: 1px solid #e2e8f0 !important; box-shadow: none !important; }
+            .print-text-dark { color: #0f172a !important; }
+        }
+    </style>
+</head>
+<body class="bg-background font-sans text-slate-800 flex h-screen overflow-hidden selection:bg-brand-500 selection:text-white">
+
+    <!-- Premium Sidebar -->
+    <aside class="w-64 bg-sidebar border-r border-slate-200/60 hidden md:flex flex-col shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-20 relative no-print">
+        <div class="h-20 flex items-center px-6 border-b border-slate-100">
+            <img src="logo.png" alt="Logo" class="mr-3 drop-shadow-sm" style="max-height: 45px; width: auto; object-fit: contain;" onerror="this.src='https://via.placeholder.com/150x45?text=Rajdoot+Logo'">
+            <div class="flex flex-col">
+                <span class="text-[15px] font-bold text-slate-900 tracking-tight leading-tight">Rajdoot Overseas</span>
+                <span class="text-[10px] font-medium text-slate-400 uppercase tracking-wider">Agency RL-379</span>
+            </div>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8 custom-scrollbar">
+            <div class="space-y-1.5">
+                <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Dashboard</a>
+            </div>
+            <div>
+                <h3 class="px-4 text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3">Finance & Admin</h3>
+                <div class="space-y-1">
+                    <a href="parties.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Agents & Clients</a>
+                    <a href="transactions.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Transactions Ledger</a>
+                    <a href="banking.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Banking & Accounts</a>
+                    <a href="expenses.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">Daily Expenses</a>
+                    <a href="payroll.html" class="flex items-center px-4 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-brand-600 rounded-xl font-medium transition-all group">HR & Payroll</a>
+                    <!-- Monthly Report (Active) -->
+                    <a href="report.html" class="flex items-center px-4 py-3 bg-gradient-to-r from-brand-500 to-brand-600 text-white rounded-xl font-semibold shadow-md transition-all">Monthly Report (P&L)</a>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="flex-1 flex flex-col min-w-0 relative">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 z-10 sticky top-0 no-print">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800 tracking-tight">Monthly Business Report</h2>
+                <p class="text-sm text-slate-500 font-medium mt-0.5">Profit and Loss Statement (P&L)</p>
+            </div>
+            <div class="flex items-center gap-3 cursor-pointer">
+                <div class="w-10 h-10 rounded-full bg-brand-100 border border-brand-200 flex items-center justify-center text-brand-600 font-bold shadow-sm">MA</div>
+                <div class="hidden md:block text-right">
+                    <p class="text-sm font-bold text-slate-700 leading-tight">Mostaque Ahmed</p>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-y-auto p-8 custom-scrollbar bg-slate-50/50">
+            
+            <!-- Print Header (Visible Only on Print) -->
+            <div class="hidden print:block mb-8 text-center border-b-2 border-slate-800 pb-4">
+                <h1 class="text-3xl font-extrabold text-slate-900 uppercase tracking-widest mb-1">Rajdoot Overseas</h1>
+                <p class="text-sm font-bold text-slate-600 uppercase tracking-widest">Government Approved Recruiting Agency (RL-379)</p>
+                <h2 class="text-xl font-bold mt-4 text-slate-800">Monthly Profit & Loss Statement</h2>
+                <p class="text-md font-bold text-slate-600" id="print-month-label">Month: </p>
+            </div>
+
+            <!-- Filter Bar (No Print) -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm no-print">
+                <div class="flex items-center gap-4 w-full md:w-auto">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Select Month & Year</label>
+                        <input type="month" id="report_month" onchange="generateReport()" class="px-4 py-2.5 border border-slate-200 rounded-xl bg-slate-50 font-bold text-slate-700 shadow-inner focus:outline-none focus:ring-2 focus:ring-brand-500/20">
+                    </div>
+                    <button onclick="generateReport()" class="mt-5 px-5 py-2.5 bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 rounded-xl font-bold transition-colors">Generate</button>
+                </div>
+
+                <div class="w-full md:w-auto">
+                    <button onclick="window.print()" class="w-full flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold shadow-md transition-all active:scale-95">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        Print P&L Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loader -->
+            <div id="loader" class="hidden text-center py-10 no-print">
+                <svg class="animate-spin h-8 w-8 mb-4 text-brand-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <p class="text-slate-500 font-medium">Calculating financials...</p>
+            </div>
+
+            <!-- Report Content -->
+            <div id="report-content" class="space-y-6">
+                
+                <!-- Financial Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Total Income -->
+                    <div class="bg-white p-6 rounded-2xl border-l-4 border-emerald-500 shadow-sm print-border">
+                        <p class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">Total Received (Income)</p>
+                        <h3 id="card_income" class="text-3xl font-extrabold text-emerald-600 print-text-dark">৳ 0</h3>
+                        <p class="text-xs text-slate-400 mt-2 font-medium">Cash inflow from clients/agents</p>
+                    </div>
+                    <!-- Total Expenses -->
+                    <div class="bg-white p-6 rounded-2xl border-l-4 border-red-400 shadow-sm print-border">
+                        <p class="text-slate-500 font-bold text-xs uppercase tracking-wider mb-1">Total Operating Expenses</p>
+                        <h3 id="card_expense" class="text-3xl font-extrabold text-red-500 print-text-dark">৳ 0</h3>
+                        <p class="text-xs text-slate-400 mt-2 font-medium">Daily expenses + Payroll</p>
+                    </div>
+                    <!-- Net Profit -->
+                    <div class="bg-slate-900 p-6 rounded-2xl shadow-lg print-border">
+                        <p class="text-slate-400 font-bold text-xs uppercase tracking-wider mb-1">Net Profit / (Loss)</p>
+                        <h3 id="card_profit" class="text-3xl font-extrabold text-white print-text-dark">৳ 0</h3>
+                        <p class="text-xs text-slate-400 mt-2 font-medium" id="profit_status_text">Overall balance for the month</p>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown Tables -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    
+                    <!-- Income Breakdown -->
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-border">
+                        <div class="bg-emerald-50/50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800">Income Breakdown</h3>
+                            <span class="text-xs font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded">Credit</span>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-600">Payments Received from Agents/Clients</span>
+                                <span id="detail_payments" class="font-bold text-slate-800">৳ 0</span>
+                            </div>
+                            <!-- Future scope for other incomes can go here -->
+                            <div class="flex justify-between items-center pt-2">
+                                <span class="font-extrabold text-slate-800">Total Income (A)</span>
+                                <span id="detail_total_income" class="font-extrabold text-emerald-600 text-lg">৳ 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expense Breakdown -->
+                    <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden print-border">
+                        <div class="bg-red-50/50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800">Expense Breakdown</h3>
+                            <span class="text-xs font-bold bg-red-100 text-red-700 px-2 py-1 rounded">Debit</span>
+                        </div>
+                        <div class="p-6 space-y-4">
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-600">Daily Operating Expenses (Office, Bills, etc)</span>
+                                <span id="detail_daily_exp" class="font-bold text-slate-800">৳ 0</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <span class="font-medium text-slate-600">Employee Salaries (Net Paid)</span>
+                                <span id="detail_payroll" class="font-bold text-slate-800">৳ 0</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2">
+                                <span class="font-extrabold text-slate-800">Total Expenses (B)</span>
+                                <span id="detail_total_expense" class="font-extrabold text-red-500 text-lg">৳ 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Final Calculation Footer -->
+                <div class="mt-8 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex justify-between items-center print-border">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-800">Final Month-End Assessment</h3>
+                        <p class="text-sm text-slate-500 font-medium mt-1">Formula: Total Income (A) - Total Expenses (B)</p>
+                    </div>
+                    <div class="text-right">
+                        <span id="final_badge" class="px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block">Profit</span>
+                        <h2 id="final_amount" class="text-4xl font-extrabold tracking-tight">৳ 0</h2>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Script Logic -->
+    <script>
+        const SUPABASE_URL = 'https://mtjzgxkfqmtifgtdrbkf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im10anpneGtmcW10aWZndGRyYmtmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM4MTMwNDEsImV4cCI6MjEwOTM4OTA0MX0.3W3RxgtzGMJgssrjx18-Z96SkxtD7ZNGqnfhJt9aRiE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Set default month to current month
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        document.getElementById('report_month').value = `${yyyy}-${mm}`;
+
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+        async function generateReport() {
+            const monthInput = document.getElementById('report_month').value;
+            if(!monthInput) return;
+
+            // UI Elements
+            document.getElementById('loader').classList.remove('hidden');
+            document.getElementById('report-content').classList.add('hidden');
+
+            const [year, month] = monthInput.split('-');
+            const monthName = monthNames[parseInt(month) - 1];
+            
+            // Set Print Label
+            document.getElementById('print-month-label').innerText = `Month: ${monthName} ${year}`;
+
+            // Date Ranges for DB Query
+            const startDate = `${year}-${month}-01`;
+            const endDate = new Date(year, month, 0).toISOString().split('T')[0]; // Last day of month
+
+            try {
+                // 1. Fetch Income (Payments Received) from Transactions
+                const { data: incomeData, error: incError } = await supabaseClient
+                    .from('transactions')
+                    .select('amount')
+                    .eq('transaction_type', 'Payment Received')
+                    .gte('trans_date', startDate)
+                    .lte('trans_date', endDate);
+                if (incError) throw incError;
+
+                let totalIncome = 0;
+                if(incomeData) {
+                    incomeData.forEach(item => totalIncome += Number(item.amount));
+                }
+
+                // 2. Fetch Daily Expenses
+                const { data: expenseData, error: expError } = await supabaseClient
+                    .from('expenses')
+                    .select('amount')
+                    .gte('expense_date', startDate)
+                    .lte('expense_date', endDate);
+                if (expError) throw expError;
+
+                let dailyExpenses = 0;
+                if(expenseData) {
+                    expenseData.forEach(item => dailyExpenses += Number(item.amount));
+                }
+
+                // 3. Fetch Payroll Expenses
+                const { data: payrollData, error: payError } = await supabaseClient
+                    .from('payroll')
+                    .select('net_salary')
+                    .eq('salary_month', monthName)
+                    .eq('salary_year', parseInt(year));
+                if (payError) throw payError;
+
+                let totalPayroll = 0;
+                if(payrollData) {
+                    payrollData.forEach(item => totalPayroll += Number(item.net_salary));
+                }
+
+                // Calculations
+                const totalExpenses = dailyExpenses + totalPayroll;
+                const netProfit = totalIncome - totalExpenses;
+
+                // Update UI Cards
+                document.getElementById('card_income').innerText = `৳ ${totalIncome.toLocaleString()}`;
+                document.getElementById('card_expense').innerText = `৳ ${totalExpenses.toLocaleString()}`;
+                
+                const profitCard = document.getElementById('card_profit');
+                const profitText = document.getElementById('profit_status_text');
+                if(netProfit >= 0) {
+                    profitCard.innerText = `৳ ${netProfit.toLocaleString()}`;
+                    profitCard.className = "text-3xl font-extrabold text-emerald-400 print-text-dark";
+                    profitText.innerText = "Great! You made a profit this month.";
+                } else {
+                    profitCard.innerText = `- ৳ ${Math.abs(netProfit).toLocaleString()}`;
+                    profitCard.className = "text-3xl font-extrabold text-red-400 print-text-dark";
+                    profitText.innerText = "Warning: Expenses exceeded income.";
+                }
+
+                // Update Breakdown Tables
+                document.getElementById('detail_payments').innerText = `৳ ${totalIncome.toLocaleString()}`;
+                document.getElementById('detail_total_income').innerText = `৳ ${totalIncome.toLocaleString()}`;
+
+                document.getElementById('detail_daily_exp').innerText = `৳ ${dailyExpenses.toLocaleString()}`;
+                document.getElementById('detail_payroll').innerText = `৳ ${totalPayroll.toLocaleString()}`;
+                document.getElementById('detail_total_expense').innerText = `৳ ${totalExpenses.toLocaleString()}`;
+
+                // Update Final Footer
+                const finalAmount = document.getElementById('final_amount');
+                const finalBadge = document.getElementById('final_badge');
+                
+                finalAmount.innerText = `৳ ${Math.abs(netProfit).toLocaleString()}`;
+                
+                if(netProfit >= 0) {
+                    finalAmount.className = "text-4xl font-extrabold tracking-tight text-emerald-600";
+                    finalBadge.className = "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block bg-emerald-100 text-emerald-700";
+                    finalBadge.innerText = "Net Profit";
+                } else {
+                    finalAmount.className = "text-4xl font-extrabold tracking-tight text-red-600";
+                    finalBadge.className = "px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-lg mb-2 inline-block bg-red-100 text-red-700";
+                    finalBadge.innerText = "Net Loss";
+                }
+
+                // Show Content
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('report-content').classList.remove('hidden');
+
+            } catch (error) {
+                console.error("Report Generation Error:", error);
+                alert("Error generating report. Please check your database connection.");
+                document.getElementById('loader').classList.add('hidden');
+            }
+        }
+
+        // Generate report on first load
+        window.onload = generateReport;
+    </script>
+</body>
+</html>
